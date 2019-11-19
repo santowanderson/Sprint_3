@@ -1,0 +1,57 @@
+enable
+configure terminal
+hostname RT-01
+banner motd "ACESSO APENAS PARA PESSOAS AUTORIZADAS"
+enable secret SenhadaEnable
+ip domain-name sprint3.local
+crypto key generate rsa general-keys modulus 1024
+username Cleiton privilege 15 secret Cleiton@15
+username Rafael privilege 15 secret Rafael@15
+username Caio privilege 15 secret Caio@155
+username Alex privilege 15 secret Alex@155
+username Wanderson.Santos privilege 15 secret Wanderson@15
+username Willian.Ladeira privilege 15 secret Willian@15
+username Rai.alves privilege 15 secret Rai@15
+username Gabriel.Silva privilege 15 secret Gabriel@15
+line console 0
+password SenhadaConsole
+login
+exit
+line vty 0 15
+transport input ssh
+exec-timeout 5
+login local
+exit
+login block-for 240 attempts 7 within 600
+security passwords min-length 8
+service password-encryption
+interface g0/1
+no shutdown
+exit
+interface g0/1.17
+encapsulation dot1q 17
+ip address 192.168.17.1 255.255.255.0
+description SUBINTERFACE VLAN 17
+ip helper-address  192.168.248.5
+exit
+interface g0/1.107
+encapsulation dot1q 107
+ip address 192.168.248.1 255.255.255.0
+description SUBINTERFACE VLAN 107
+ip helper-address  192.168.248.5
+exit
+interface gigabitEthernet 0/1.18
+encapsulation dot1q 18
+ip address 192.168.18.1 255.255.255.0
+description VLAN18 CONEXAO COM SW-CORE
+ip helper-address 192.168.247.5
+exit
+interface gigabitEthernet 0/1.108
+encapsulation dot1q 108
+ip address 192.168.247.1 255.255.255.0
+description VLAN 108 CONEXAO COM SW-CORE
+ip helper-address 192.168.247.5
+exit
+ip ftp username Sprint3
+ip ftp password Sprint@3
+do wr
