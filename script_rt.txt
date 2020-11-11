@@ -1,0 +1,34 @@
+enable
+configure terminal
+banner motd "ACESSO APENAS A PESSOAS AUTORIZADAS"
+hostname RT01-DAREDE
+enable secret Senai@132
+service password-encryption
+ip domain-name darede.local
+crypto key generate rsa general-key modulus 1024
+username administrador privilege 15 secret Senai@132
+login block-for 180 attempts 3 within 60
+line console 0
+password Senai@132
+login local
+!
+!
+line vty 0 15
+transport input ssh
+login local
+exec-timeout 10
+!
+!
+interface g0/0
+ip address 172.30.104.14 255.255.255.240
+description Conexao_Firewall
+no shutdown
+!
+!
+interface g0/1
+ip address 192.168.132.104 255.255.0.0
+description Conexao_Rede_externa
+no shutdown
+!
+!
+do wr

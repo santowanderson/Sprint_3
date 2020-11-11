@@ -1,0 +1,47 @@
+enable
+configure terminal
+hostname SW01-DAREDE
+banner motd "ACESSO APENAS A PESSOAS AUTORIZADAS"
+enable secret Senai@132
+service password-encryption
+ip domain-name darede.local
+crypto key generate rsa general-key modulus 1024
+username administrador privilege 15 secret Senai@132
+line console 0
+password Senai@132
+login local
+!
+!
+line vty 0 15
+transport input ssh
+login local
+exec-timeout 10
+!
+!
+interface range f0/1-19
+switchport mode access
+switchport access vlan 100
+!
+!
+interface g0/1
+switchport mode access
+switchport access vlan 100
+!
+!
+interface range f0/20-24
+switchport mode access
+switchport access vlan 200
+!
+!
+interface g0/2
+switchport mode access
+switchport access vlan 200
+!
+!
+interface vlan 200
+ip address 172.31.104.129 255.255.255.224
+no shutdown
+!
+!
+ip default-gateway 172.31.104.158
+do wr

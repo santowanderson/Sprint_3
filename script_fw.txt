@@ -1,0 +1,81 @@
+configure terminal
+hostname FW01-DAREDE
+domain-name darede.local
+aaa authentication ssh console LOCAL
+crypto key generate rsa general-key modulus 1024
+yes
+ssh 0.0.0.0 0.0.0.0 outside
+username administrador privilege 15 secret Senai@132
+interface g1/3
+nameif dmz
+ip address 172.31.104.158 255.255.255.224
+no shutdown
+security-level 50
+!
+!
+interface g1/2
+nameif inside
+security-level 100
+ip address 10.10.104.126 255.255.255.128
+no shutdown
+!
+!
+interface g1/1
+nameif outside
+ip address 172.30.104.1 255.255.255.240
+no shutdown
+!
+!
+access-list inside_access-in extended permit ip any any
+access-group inside_access-in in interface inside
+!
+!
+access-list dmz_access-in extended permit ip any any
+access-group dmz_access-in in interface dmz
+!
+!
+access-list outside_access-in extended permit ip any any
+access-group outside_access-in in interface outside
+!
+!
+route outside 0.0.0.0 0.0.0.0 172.30.104.14
+dhcpd address 10.10.104.10-10.10.104.32 inside
+dhcpd dns 172.31.104.132
+dhcpd enable inside
+!
+!
+object network REDE-CLIENTE
+subnet 10.10.104.0 255.255.255.128
+description OBEJETO PARA DECLARAR A REDE CLIENTE
+nat (inside,outside) dynamic interface
+!
+!
+object network REDE-DMZ
+subnet 172.31.104.128 255.255.255.224
+description OBEJETO PARA DECLARAR A REDE DMZ
+nat (dmz,outside) dynamic interface
+!
+!
+object network REDE-DMZ-NAT
+host 172.31.104.131
+description OBEJETO PARA DECLARAR O HOST SRV-Win
+nat (any,outside) static 172.30.104.12
+!
+!
+object network REDE-DMZ-NAT
+host 172.31.104.132
+description OBEJETO PARA DECLARAR O HOST SRV-Lin
+nat (any,outside) static 172.30.104.13
+!
+!
+object network REDE-DMZ-NAT
+host 172.31.104.133
+description OBEJETO PARA DECLARAR O HOST ESXI
+nat (any,outside) static 172.30.104.11
+!
+!
+object network REDE-DMZ-NAT
+host 10.10.104.10
+description OBEJETO PARA DECLARAR O HOST CLIENTE
+nat (any,outside) static 172.30.104.10
+wr
